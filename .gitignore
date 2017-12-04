@@ -286,3 +286,5 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+mssql/App.CountyPublicTrustee.SQL
+mssql/App.CountyRegionStateProvince.SQL
