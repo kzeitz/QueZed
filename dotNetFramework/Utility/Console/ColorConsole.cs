@@ -2,11 +2,13 @@
 using System.Text;
 
 namespace QueZed.Utility.Console {
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text.RegularExpressions;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
 
-	public static partial class Extensions {
+
+
+public static partial class Extensions {
 		private static object writeGate = new object();
 		private static object readGate = new object();
 		// This regular expression assumes the pattern - { index }
@@ -16,7 +18,7 @@ namespace QueZed.Utility.Console {
 		// We can tackle the alignment and formatString options another day.
 		// Perhaps we can incorporate the color option into the format item (but that would only specify the color of the replaced text, not the literal text in the format string)
 
-		public static void WriteLineBlank(this ColorConsole console, int lines = 1, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
+        public static void WriteLineBlank(this ColorConsole console, int lines = 1, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
 			lock (writeGate) {
 				foregroundBackground(foregroundColor, backgroundColor);
 				System.Console.WriteLine(new string(char.MinValue, lines - 1).Replace(char.MinValue.ToString(), Environment.NewLine));
@@ -75,4 +77,14 @@ namespace QueZed.Utility.Console {
 
 	}
 	public class ColorConsole { }
+
+    public static class LogConsole {
+        static ColorConsole cc = new ColorConsole();
+        public static void Success(string message) { cc.WriteLine(message, ConsoleColor.Green); }
+        public static void Warning(string message) { cc.WriteLine(message, ConsoleColor.Yellow); }
+        public static void Error(string message) { cc.WriteLine(message, ConsoleColor.Red); }
+        public static void LogToLibrary(string message) { cc.WriteLine(message, ConsoleColor.Gray); }
+
+    }
+
 }
