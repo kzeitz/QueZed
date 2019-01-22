@@ -42,7 +42,7 @@ namespace DAL {
 		private void connect(Security principal) { connection = new DatabaseStore().Read<Connection>(); connection.AssumePrincipal(principal); }
 
 			// create a top-level DAI objects, there shouldn't be too many.
-		public virtual void Initialize() { return; }
+		public abstract void Initialize(); //{}
 
 		public DAI(string connectionString, ApplicationSecurity principal = null) : this(new DataSourceEnterpriseLibraryConnectionString(connectionString), principal) { }
 		public DAI(IDataSource source, ApplicationSecurity principal = null) {

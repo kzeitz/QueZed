@@ -459,7 +459,7 @@ DECLARE
 	SET @oldDboProcName = 'dbo.' + QUOTENAME('UDI_' + [app.utility].tableName(@tableName))
 	SET @oldProcName = @schemaName + '.' + QUOTENAME('UDI_' + [app.utility].tableName(@tableName))
 	-- Build declaration for store procedure
-	SET @procName = '[dbo.udi]' + '.' + QUOTENAME([app.utility].tableName(@tableName))
+	SET @procName = '[dom.udi]' + '.' + QUOTENAME([app.utility].tableName(@tableName))
 
 	-- Build Parameter list including data types and length for data types that require length. All parameters
 	-- are optional so an ' = NULL' is appended.

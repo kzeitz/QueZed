@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QueZed.Utility.Program {
+namespace Karlton.Utility.Program {
    using System.Diagnostics;
    using System.Reflection;
    using System.IO;
    using System.Configuration;
+   using System.Security.Principal;
    using log4net;
+   using log4net.Repository.Hierarchy;
+   using log4net.Appender;
 
    public abstract class Program {
       private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -41,11 +44,11 @@ namespace QueZed.Utility.Program {
          }
       }
 
-		//protected abstract void main(string[] args);
-		protected virtual void main(string[] args) { throw new NotImplementedException(); }
+      protected abstract void main(string[] args);
 		protected virtual void configurationFile_Changed(object sender, FileSystemEventArgs e) { log.Info("Configuration file changed"); }
 
 		public void Run(string[] args) {
+         AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
 			ConfigureLog();
 			ConfigureApplication(args);
 			configurationFileWatcher = configureFileWatcher(new FileSystemEventHandler(configurationFile_Changed));
@@ -69,9 +72,10 @@ namespace QueZed.Utility.Program {
             }
          }
          log.InfoFormat("Logging initialized. Source configuration : {0}", sourceConfiguration);
+         FileAppender rootAppender = ((Hierarchy)LogManager.GetRepository()).Root.Appenders.OfType<FileAppender>().FirstOrDefault();
+         if (null != rootAppender) sourceConfiguration = string.Format("Log file path: {0}", rootAppender.File);
       }
 
-		protected virtual void ConfigureApplication() { ConfigureApplication(new string[] { }); }
       protected virtual void ConfigureApplication(string[] args) {
          // command line overrides configuration file
          // -dev DeveloperMode - Login database combo box to allow selection or not

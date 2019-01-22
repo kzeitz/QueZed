@@ -70,23 +70,77 @@ namespace DAL {
       //[TypeConverter(typeof(DatabaseKeyConverter))]
       //protected internal sealed class DatabaseKey : IConvertible {
 
+      //protected internal sealed class DatabaseKey<T> : IConvertible {
+      //   // ToDo : Support composite keys
+      //   private string name = null;
+      //   private SqlDbType sqlDbType = (SqlDbType)0;
+      //   private T? _value = null;
+      //   public DatabaseKey(string name, T keyValue = default(T)) { this.name = name; this.sqlDbType = dbTypesFromDotNetType[typeof(T)].Item1; _value = keyValue; }
+      //   public DatabaseKey(DatabindAttribute attribute) : this(attribute != null ? attribute.ColumnName : null) { }
+      //   public string Name { get { return name; } }
+      //   public SqlDbType SqlDbType { get { return sqlDbType; } }
+      //   public DbType DbType { get { try { return (new SqlParameter(string.Empty, SqlDbType)).DbType; } catch (Exception) { return DbType.Int32; } } }
+      //   public T Value { get { return _value.HasValue ? _value.Value : default(T); } }
+      //   public T? ValueNull { get { return _value; } }
+      //   public string ParameterName { get { return string.Format("@{0}", name); } }
+      //   public static DatabaseKey<T> Relate(DatabaseKey<T> fromTypeKey, DatabaseKey<T> toTypeKey) { return (fromTypeKey != null && toTypeKey != null) ? new DatabaseKey(toTypeKey.Name, fromTypeKey.SqlDbType, fromTypeKey.Value) : new DatabaseKey(null); }
+      //   public static implicit operator T(DatabaseKey<T> key) { return key.Value; }
+      //   public static implicit operator DatabaseKey<T>(T value) { return new DatabaseKey<T>(null, DBTypesFromDotNetType(typeof(T), value)); }
+      //   #region IConvertable
+      //   public TypeCode GetTypeCode() { return TypeCode.Object; }
+      //   public bool ToBoolean(IFormatProvider provider) { return Convert.ToBoolean(_value); }
+      //   public byte ToByte(IFormatProvider provider) { return Convert.ToByte(_value); }
+      //   public char ToChar(IFormatProvider provider) { return Convert.ToChar(_value); }
+      //   public DateTime ToDateTime(IFormatProvider provider) { return Convert.ToDateTime(_value); }
+      //   public decimal ToDecimal(IFormatProvider provider) { return Convert.ToDecimal(_value); }
+      //   public double ToDouble(IFormatProvider provider) { return Convert.ToDouble(_value); }
+      //   public short ToInt16(IFormatProvider provider) { return Convert.ToInt16(_value); }
+      //   public int ToInt32(IFormatProvider provider) { return _value; }
+      //   public long ToInt64(IFormatProvider provider) { return Convert.ToInt64(_value); }
+      //   public sbyte ToSByte(IFormatProvider provider) { return Convert.ToSByte(_value); }
+      //   public float ToSingle(IFormatProvider provider) { return Convert.ToSingle(_value); }
+      //   public string ToString(IFormatProvider provider) { return Convert.ToString(_value); }
+      //   public object ToType(Type conversionType, IFormatProvider provider) { return Convert.ChangeType(_value, conversionType); }
+      //   public ushort ToUInt16(IFormatProvider provider) { return Convert.ToUInt16(_value); }
+      //   public uint ToUInt32(IFormatProvider provider) { return Convert.ToUInt32(_value); }
+      //   public ulong ToUInt64(IFormatProvider provider) { return Convert.ToUInt64(_value); }
+      //   #endregion
+      //   // I don't see a need yet to support all the type yet, just the likely ones
+      //   private static readonly Dictionary<Type, Tuple<SqlDbType, DbType>> dbTypesFromDotNetType = new Dictionary<Type, Tuple<SqlDbType, DbType>> {
+      //      { typeof(int), new Tuple<SqlDbType, DbType>(SqlDbType.Int, DbType.Int32)},
+      //      { typeof(long), new Tuple<SqlDbType, DbType>(SqlDbType.BigInt, DbType.Int64)},
+      //      { typeof(Guid), new Tuple<SqlDbType, DbType>(SqlDbType.UniqueIdentifier, DbType.Guid)},
+      //      { typeof(string), new Tuple<SqlDbType, DbType>(SqlDbType.VarChar, DbType.String)},
+      //      { typeof(DateTime), new Tuple<SqlDbType, DbType>(SqlDbType.DateTime2, DbType.DateTime2)}
+      //   };
+      //}
       protected internal sealed class DatabaseKey : IConvertible {
-         // ToDo : Support data type other than int, at least (varchar)
          // ToDo : Support composite keys
          private string name = null;
-         private SqlDbType sqlDbType = SqlDbType.Int;
-         private int _value = -1;
-         public DatabaseKey(string name, SqlDbType sqlDbType = SqlDbType.Int, int keyValue = -1) { this.name = name; this.sqlDbType = sqlDbType; _value = keyValue; }
+         private SqlDbType sqlDbType = (SqlDbType)0;
+         private DbType dbType = (DbType)0;
+         private object _value = null;
+         public DatabaseKey(string name, object keyValue = null) {
+            this.name = name;
+            if (null != keyValue) {
+               Tuple<SqlDbType, DbType> dbTypes = dbTypesFromDotNetType[keyValue.GetType()];
+               sqlDbType = dbTypes.Item1;
+               dbType = dbTypes.Item2;
+            }
+            _value = keyValue;
+         }
          public DatabaseKey(DatabindAttribute attribute) : this(attribute != null ? attribute.ColumnName : null) { }
          public string Name { get { return name; } }
          public SqlDbType SqlDbType { get { return sqlDbType; } }
-         public DbType DbType { get { try { return (new SqlParameter(string.Empty, SqlDbType)).DbType; } catch (Exception) { return System.Data.DbType.Int32; } } }
-         public int Value { get { return _value; } }
-         public int? ValueNull { get { if (_value != -1) return _value; else return null; } }
+         public DbType DbType { get { return dbType; } }
+         public object Value { get { return _value; } }
+         //public int? ValueNull { get { if (_value != -1) return _value; else return null; } }
          public string ParameterName { get { return string.Format("@{0}", name); } }
-         public static DatabaseKey Relate(DatabaseKey fromTypeKey, DatabaseKey toTypeKey) { return (fromTypeKey != null && toTypeKey != null) ? new DatabaseKey(toTypeKey.Name, fromTypeKey.SqlDbType, fromTypeKey.Value) : new DatabaseKey(null); }
-         public static implicit operator int(DatabaseKey key) { return key.Value; }
-         public static implicit operator DatabaseKey(int value) { return new DatabaseKey(null, SqlDbType.Int, value); }
+         public static DatabaseKey Relate(DatabaseKey fromTypeKey, DatabaseKey toTypeKey) { 
+            return (fromTypeKey != null && toTypeKey != null) ? new DatabaseKey(toTypeKey.Name, fromTypeKey.Value) : new DatabaseKey(null); 
+         }
+         //public static implicit operator int(DatabaseKey key) { return key.Value; }
+         //public static implicit operator DatabaseKey(int value) { return new DatabaseKey(null, SqlDbType.Int, value); }
          #region IConvertable
          public TypeCode GetTypeCode() { return TypeCode.Object; }
          public bool ToBoolean(IFormatProvider provider) { return Convert.ToBoolean(_value); }
@@ -96,7 +150,7 @@ namespace DAL {
          public decimal ToDecimal(IFormatProvider provider) { return Convert.ToDecimal(_value); }
          public double ToDouble(IFormatProvider provider) { return Convert.ToDouble(_value); }
          public short ToInt16(IFormatProvider provider) { return Convert.ToInt16(_value); }
-         public int ToInt32(IFormatProvider provider) { return _value; }
+         public int ToInt32(IFormatProvider provider) { return Convert.ToInt32(_value); }
          public long ToInt64(IFormatProvider provider) { return Convert.ToInt64(_value); }
          public sbyte ToSByte(IFormatProvider provider) { return Convert.ToSByte(_value); }
          public float ToSingle(IFormatProvider provider) { return Convert.ToSingle(_value); }
@@ -106,12 +160,28 @@ namespace DAL {
          public uint ToUInt32(IFormatProvider provider) { return Convert.ToUInt32(_value); }
          public ulong ToUInt64(IFormatProvider provider) { return Convert.ToUInt64(_value); }
          #endregion
+         // I don't see a need yet to support all the type yet, just the likely ones
+         private static readonly Dictionary<Type, Tuple<SqlDbType, DbType>> dbTypesFromDotNetType = new Dictionary<Type, Tuple<SqlDbType, DbType>> {
+               { typeof(int), new Tuple<SqlDbType, DbType>(SqlDbType.Int, DbType.Int32)},
+               { typeof(long), new Tuple<SqlDbType, DbType>(SqlDbType.BigInt, DbType.Int64)},
+               { typeof(Guid), new Tuple<SqlDbType, DbType>(SqlDbType.UniqueIdentifier, DbType.Guid)},
+               { typeof(string), new Tuple<SqlDbType, DbType>(SqlDbType.VarChar, DbType.String)},
+               { typeof(DateTime), new Tuple<SqlDbType, DbType>(SqlDbType.DateTime2, DbType.DateTime2)}
+            };
       }
+      //protected internal sealed class DatabaseRelation<T> {
+      //   private DatabaseKey<T> primaryKey = null;
+      //   private DatabaseKey<T> foreignKey = null;
+      //   internal DatabaseRelation(DatabaseKey<T> primaryKey, DatabaseKey<T> foreignKey) { this.primaryKey = primaryKey; this.foreignKey = foreignKey; }
+      //   public DatabaseRelation(int primaryKey) : this(new DatabaseKey(null, SqlDbType.Int, primaryKey), null) { }
+      //   internal DatabaseKey<T> PrimaryKey { get { return primaryKey; } }
+      //   internal DatabaseKey<T> ForeignKey { get { return foreignKey; } }
+      //}
       protected internal sealed class DatabaseRelation {
          private DatabaseKey primaryKey = null;
          private DatabaseKey foreignKey = null;
          internal DatabaseRelation(DatabaseKey primaryKey, DatabaseKey foreignKey) { this.primaryKey = primaryKey; this.foreignKey = foreignKey; }
-         public DatabaseRelation(int primaryKey) : this(new DatabaseKey(null, SqlDbType.Int, primaryKey), null) { }
+          public DatabaseRelation(object primaryKey) : this(new DatabaseKey(null, primaryKey), null) { }
          internal DatabaseKey PrimaryKey { get { return primaryKey; } }
          internal DatabaseKey ForeignKey { get { return foreignKey; } }
       }
@@ -182,7 +252,7 @@ namespace DAL {
          private string command = null;
          public DatabindCommandAttribute(CommandType commandType, string command) : base() { this.commandType = commandType; this.command = command; }
          public string Command { get { return command; } }
-         public string StoredProcedure { get { return commandType == System.Data.CommandType.StoredProcedure ? command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0] : null; } }
+         public string StoredProcedure { get { return commandType == CommandType.StoredProcedure ? command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0] : null; } }
          public CommandType CommandType { get { return commandType; } }
       }
       protected internal class DatabindAttribute : System.Attribute {
@@ -323,7 +393,7 @@ namespace DAL {
       }
       protected internal static void setFieldValue(object instance, string fieldName, FieldInfo fi, object value) {
          Type type = fi.FieldType;
-         if (type.Equals(typeof(DatabaseKey))) fi.SetValue(instance, new DatabaseKey(fieldName, SqlDbType.Int, (int)value)); // Don't like this line at all
+         if (type.Equals(typeof(DatabaseKey))) fi.SetValue(instance, new DatabaseKey(fieldName, value));
          else if (type.BaseType.Equals(typeof(System.Enum))) fi.SetValue(instance, System.Enum.ToObject(type, value));
          else fi.SetValue(instance, Convert.ChangeType(value, type));
       }
@@ -346,6 +416,9 @@ namespace DAL {
          DatabaseKey typeKey = map.PrimaryKey;
          return readCommand(map.ReadCommandTextIsSql, map.ReadCommandText, typeKey, map.ReadUnboundParameterNames(), parameterValues);
       }
+      private static DbCommand readCommandType<T>(string commandText, string[] parameterNames = null, object[] parameterValues = null) {
+          return readCommand(true, commandText, null, parameterNames, parameterValues);
+      }
 
       private static DbCommand readCommandRelatedType<T>(DatabaseKey fromTypeKey) {
          Map map = Maps.Map<T>();
@@ -356,10 +429,10 @@ namespace DAL {
       private static DbCommand readCommand(bool commandTextIsSql, string commandText, DatabaseKey key, string[] parameterNames = null, object[] parameterValues = null) {
          DbCommand command = null;
          if (commandTextIsSql) {
-            command = db.GetSqlStringCommand(readCommandSql(commandText, key != null ? key.Name : null));
-            if (null != key) db.AddParameter(command, key.ParameterName, key.DbType, ParameterDirection.Input, string.Empty, DataRowVersion.Default, key.ValueNull);
+            command = (key != null && key.Value != null) ? db.GetSqlStringCommand(readCommandSql(commandText, key.Name)) : db.GetSqlStringCommand(commandText);
+            if (null != key) db.AddParameter(command, key.ParameterName, key.DbType, ParameterDirection.Input, string.Empty, DataRowVersion.Default, key.Value);
             if (null != parameterValues) mapUnboundParameters(command, parameterNames, parameterValues);
-         } else command = db.GetStoredProcCommand(commandText, new object[] { key != null ? key.ValueNull : null });
+         } else command = db.GetStoredProcCommand(commandText, new object[] { key != null ? key.Value : null });
          logCommand(command);
          return command;
       }
@@ -381,7 +454,7 @@ namespace DAL {
          foreach (WriteMapping wm in writeMap)
             if (wm.IsColumnKey || wm.Ordinal != null) {
                object value = wm.FieldInfo.GetValue(instance);
-               if (wm.FieldInfo.FieldType == typeof(DatabaseKey)) value = (int)(value as DatabaseKey); // Don't like this line at all
+               //if (wm.FieldInfo.FieldType == typeof(DatabaseKey)) value = (int)(value as DatabaseKey); // Don't like this line at all
                command.Parameters.Add(new SqlParameter(wm.ParameterName, value));
             }
       }
@@ -424,17 +497,6 @@ namespace DAL {
          if (dr.Read()) instanceT = createObject<T>(dr, map);
          return instanceT;
       }
-		private static C readObjects<T, C>(IDataReader dr)
-			where T : class, new()
-			where C : ICollection<T>, new() {
-			C collection = new C();
-			List<ReadMapping> map = Maps.ReadMap<T>(dr);
-			while (dr.Read()) {
-				T instanceT = createObject<T>(dr, map);
-				collection.Add(instanceT);
-			}
-			return collection;
-		}
 		private static C readObjects<T, C, I>(IDataReader dr)
          where T : class, I, new()
          where C : ICollection<I>, new() {
@@ -459,22 +521,35 @@ namespace DAL {
          //         object o = db.ExecuteScalar(db.GetStoredProcCommand(dai.SelectProcedure, dai.Key));
          //         setFieldValue(this, dai.DatabaseFieldInfoCache, o);
       }
+      public C Read<T, C, I>(string commandText, string[] parameterNames = null, object[] parameterValues = null)
+          where T : class, I, new()
+          where C : ICollection<I>, new() {
+        using (IDataReader idr = db.ExecuteReader(readCommandType<T>(commandText, parameterNames, parameterValues))) {
+            return readObjects<T, C, I>(idr);
+        }
+      }
+
       public T Read<T>(object[] parameterValues = null) where T : class, new() {
          using (IDataReader idr = db.ExecuteReader(readCommandType<T>(parameterValues))) {
             return readObject<T>(idr);
          }
       }
-		public C Read<T, C>(object[] parameterValues = null)
-			where T : class, new()
-			where C : ICollection<T>, new() {
+      
+       public C Read<T, C, I>(object[] parameterValues = null)
+          where T : class, I, new()
+          where C : ICollection<I>, new() {
+          DatabaseKey key = primaryKey;
 			using (IDataReader idr = db.ExecuteReader(readCommandRelatedType<T>(primaryKey))) {
-				return readObjects<T, C>(idr);
+              return readObjects<T, C, I>(idr);
 			}
 		}
-		public C Read<T, C, I>(object[] parameterValues = null)
+
+       public C ReadRelated<T, C, I>(object keyValue = null)
          where T : class, I, new()
          where C : ICollection<I>, new() {
-         using (IDataReader idr = db.ExecuteReader(readCommandRelatedType<T>(primaryKey))) {
+         DatabaseKey key = primaryKey;
+         if (null != keyValue) key = new DatabaseKey(key.Name, keyValue);
+         using (IDataReader idr = db.ExecuteReader(readCommandRelatedType<T>(key))) {
             return readObjects<T, C, I>(idr);
          }
       }

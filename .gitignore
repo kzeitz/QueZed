@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 mssql/App.CountyPublicTrustee.SQL
 mssql/App.CountyRegionStateProvince.SQL
+*.bak

@@ -39,6 +39,9 @@ namespace DAL {
 	}
 
 	public class FindableSortableBindingList<T> : BindingList<T> {
+        public FindableSortableBindingList() : base() { }
+        public FindableSortableBindingList(IList<T> list) : base(list) { }
+
 		#region Find members
 		protected override bool SupportsSearchingCore { get { return true; } }
 		protected override int FindCore(PropertyDescriptor property, object key) {
@@ -161,4 +164,5 @@ namespace DAL {
 		#endregion
 	}
 	#endregion
+
 }
