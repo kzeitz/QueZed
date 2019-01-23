@@ -472,6 +472,7 @@ namespace DAL {
          return data.ToArray();
       }
 
+      // Proposed Scalar support
       //      private static DatabindScalarAttribute scalarAttributes(Type type, string scalarFieldName) {
       //         FieldInfo fieldInfo = (FieldInfo)type.GetField(scalarFieldName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic);
       //         DatabindScalarAttribute dsa = (DatabindScalarAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(DatabindScalarAttribute));

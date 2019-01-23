@@ -9,7 +9,7 @@ namespace QueZed.Utility.Program {
    using System.Reflection;
 
    public class KeyValueOrigin {
-      public enum Origins { _None, AppConfig, CommandLine, Code, Database }
+      public enum Origins { _None, MachineConfig, AppConfig, CommandLine, Code, Database }
       private string key = null;
       private string value = null;
       private Origins origin = Origins._None;

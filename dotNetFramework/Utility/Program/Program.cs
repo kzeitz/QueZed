@@ -86,7 +86,12 @@ namespace Karlton.Utility.Program {
          log.Info("Process application configuration file.");
          settings.Add(ConfigurationManager.AppSettings, KeyValueOrigin.Origins.AppConfig);
          connectionStrings = ConfigurationManager.ConnectionStrings;
-         foreach (ConnectionStringSettings css in connectionStrings) settings.Add(css.Name, css.ConnectionString, KeyValueOrigin.Origins.AppConfig);
+         foreach (ConnectionStringSettings css in connectionStrings) {
+            KeyValueOrigin.Origins origin = KeyValueOrigin.Origins.AppConfig;
+            // Find a better way to determine if a setting was inherrited from MACHINE.config
+            if (0 == string.Compare(css.Name, "LocalSqlServer", StringComparison.Ordinal)) origin = KeyValueOrigin.Origins.MachineConfig;
+            settings.Add(css.Name, css.ConnectionString, origin);
+         }
          log.Info("Process command line.");
          for (int i = 0; i < args.Length; ++i) {
             string s = args[i];

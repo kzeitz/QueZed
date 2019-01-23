@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>DemoDB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{f4bb71ac-7c9f-46c3-964f-3a1574fe5703}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Demo</RootNamespace>
+    <AssemblyName>Demo</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <SqlTargetName>Demo</SqlTargetName>
+    <SqlCodeAnalysisRules>-Microsoft.Rules.Data.SR0001;-Microsoft.Rules.Data.SR0004;-Microsoft.Rules.Data.SR0005;-Microsoft.Rules.Data.SR0006;-Microsoft.Rules.Data.SR0007;-Microsoft.Rules.Data.SR0008;-Microsoft.Rules.Data.SR0009;-Microsoft.Rules.Data.SR0010;-Microsoft.Rules.Data.SR0011;-Microsoft.Rules.Data.SR0012;-Microsoft.Rules.Data.SR0013;-Microsoft.Rules.Data.SR0014;-Microsoft.Rules.Data.SR0015;-Microsoft.Rules.Data.SR0016</SqlCodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="app.utility\" />
+    <Folder Include="app.utility\Functions\" />
+    <Folder Include="app.udi.utility\" />
+    <Folder Include="app.udi.utility\Functions\" />
+    <Folder Include="app.utility\Stored Procedures\" />
+    <Folder Include="app.udi.utility\Stored Procedures\" />
+    <Folder Include="app.udi\" />
+    <Folder Include="app.udi\Stored Procedures\" />
+    <Folder Include="app.udi.utility\User Defined Types\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo.select\" />
+    <Folder Include="dbo.select\Views\" />
+    <Folder Include="dom.udi\" />
+    <Folder Include="dom.udi\Stored Procedures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="app.utility\Functions\tempTableName.sql" />
+    <Build Include="app.utility\Functions\stripPattern.sql" />
+    <Build Include="app.utility\Functions\unquoteName.sql" />
+    <Build Include="app.utility\Functions\removeEnclosingCharacterPair.sql" />
+    <Build Include="app.utility\Functions\trim.sql" />
+    <Build Include="app.utility\Functions\serverName.sql" />
+    <Build Include="app.utility\Functions\databaseName.sql" />
+    <Build Include="app.utility\Functions\schemaName.sql" />
+    <Build Include="app.utility\Functions\tableName.sql" />
+    <Build Include="app.udi.utility\Functions\pkColumns.sql" />
+    <Build Include="app.utility\Stored Procedures\CascadeDelete.sql" />
+    <Build Include="app.udi.utility\Stored Procedures\checkSchema.sql" />
+    <Build Include="app.udi.utility\Stored Procedures\column.sql" />
+    <Build Include="app.udi.utility\Stored Procedures\delimitedColumns.sql" />
+    <Build Include="app.udi.utility\Stored Procedures\tableColumns.sql" />
+    <Build Include="app.udi.utility\Stored Procedures\columnsTable.sql" />
+    <Build Include="app.udi\Stored Procedures\View.sql" />
+    <Build Include="app.udi\Stored Procedures\UDI.sql" />
+    <Build Include="app.udi\Stored Procedures\LookupUDF.sql" />
+    <Build Include="app.udi\Stored Procedures\DeleteTrigger.sql" />
+    <Build Include="app.udi\Stored Procedures\AuditTrigger.sql" />
+    <Build Include="app.udi\Stored Procedures\AuditColumns.sql" />
+    <Build Include="app.udi.utility\User Defined Types\DefaultValue.sql" />
+    <Build Include="app.udi.utility\User Defined Types\LookupName.sql" />
+    <Build Include="app.udi.utility\User Defined Types\LookupId.sql" />
+    <Build Include="Security\app.utility.sql" />
+    <Build Include="Security\app.udi.utility.sql" />
+    <Build Include="Security\app.udi.sql" />
+    <Build Include="Security\dom.udi.sql" />
+    <Build Include="Security\dbo.select.sql" />
+    <Build Include="dbo\Tables\Name.sql" />
+    <Build Include="dbo.select\Views\Name.sql" />
+    <Build Include="dom.udi\Stored Procedures\Name.sql" />
+  </ItemGroup>
+</Project>
