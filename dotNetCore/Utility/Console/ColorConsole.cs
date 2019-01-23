@@ -16,21 +16,21 @@ namespace QueZed.Utility.Console {
       // We can tackle the alignment and formatString options another day.
       // Perhaps we can incorporate the color option into the format item (but that would only specify the color of the replaced text, not the literal text in the format string)
 
-      public static void WriteLineBlank(this ColorConsole colorConsole, int lines, ConsoleColor foregroundColor, ConsoleColor backgroundColor) {
+      public static void WriteLineBlank(this ColorConsole colorConsole, int lines = 1, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
          lock (writeGate) {
             foregroundBackground(foregroundColor, backgroundColor);
             Console.WriteLine(new string(char.MinValue, lines - 1).Replace(char.MinValue.ToString(), Environment.NewLine));
             Console.ResetColor();
          }
       }
-      public static void Write(this ColorConsole colorConsole, string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) {
+      public static void Write(this ColorConsole colorConsole, string text, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
          lock (writeGate) {
             foregroundBackground(foregroundColor, backgroundColor);
             Console.Write(text);
             Console.ResetColor();
          }
       }
-      public static void WriteLine(this ColorConsole colorConsole, string line, ConsoleColor foregroundColor, ConsoleColor backgroundColor) {
+      public static void WriteLine(this ColorConsole colorConsole, string line, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
          lock (writeGate) {
             foregroundBackground(foregroundColor, backgroundColor);
             Console.WriteLine(line);
@@ -45,7 +45,7 @@ namespace QueZed.Utility.Console {
       public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, string format, params object[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingForegroundColor, valueForegroundColor); } }
       public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, ConsoleColor headingBackgroundColor, ConsoleColor valueBackgroundColor, string format, params object[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingForegroundColor, valueForegroundColor, headingBackgroundColor, valueBackgroundColor); } }
       public static string ReadLine(this ColorConsole colorConsole, string prompt, bool intercept = false, char echo = '*') { lock (readGate) { return ReadLine(colorConsole, prompt, ConsoleColor.Gray, ConsoleColor.Black, intercept, echo); } }
-      public static string ReadLine(this ColorConsole colorConsole, string prompt, ConsoleColor foregroundColor, ConsoleColor backgroundColor, bool intercept = false, char echo = '*') {
+      public static string ReadLine(this ColorConsole colorConsole, string prompt, ConsoleColor foregroundColor, ConsoleColor backgroundColor = ConsoleColor.Black, bool intercept = false, char echo = '*') {
          lock (readGate) {
             colorConsole.Write(prompt, foregroundColor, backgroundColor);
             if (!intercept) return Console.ReadLine();
@@ -55,10 +55,10 @@ namespace QueZed.Utility.Console {
                ConsoleKeyInfo keyInfo;
                while ((keyInfo = Console.ReadKey(intercept)).Key != ConsoleKey.Enter) {
                   if (ConsoleKey.LeftArrow == keyInfo.Key || ConsoleKey.RightArrow == keyInfo.Key) continue;
-                  if (ConsoleKey.Backspace == keyInfo.Key) { if (Console.CursorLeft > left) { colorConsole.Write("\b \b", foregroundColor, backgroundColor); if (sb.Length > 0) sb.Remove(sb.Length - 1, 1); } continue; }
+                  if (ConsoleKey.Backspace == keyInfo.Key) { if (Console.CursorLeft > left) { colorConsole.Write("\b \b"); if (sb.Length > 0) sb.Remove(sb.Length - 1, 1); } continue; }
                   Console.Write(echo); sb.Append(keyInfo.KeyChar);
                };
-               colorConsole.WriteLineBlank(1, foregroundColor, backgroundColor);
+               colorConsole.WriteLineBlank();
                return sb.ToString();
             }
          }
@@ -79,15 +79,4 @@ namespace QueZed.Utility.Console {
 
    }
    public class ColorConsole { }
-   public static class CConsole {
-        private static ColorConsole cc = new ColorConsole();
-        public static void WriteLineBlank(int lines = 1, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) { cc.WriteLineBlank(lines, foregroundColor, backgroundColor);  }
-        public static void Write(string text, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) { cc.Write(text, foregroundColor, backgroundColor); }
-        public static void WriteLine(string line, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) { cc.WriteLine(line, foregroundColor, backgroundColor); }
-        public static void WriteLineBicolor(string format, params object[] args) { cc.WriteLineBicolor(format, args); }
-        public static void WriteLineBicolor(ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, string format, params object[] args) { cc.WriteLineBicolor(headingForegroundColor, valueForegroundColor, format, args); }
-        public static void WriteLineBicolor(ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, ConsoleColor headingBackgroundColor, ConsoleColor valueBackgroundColor, string format, params object[] args) { cc.WriteLineBicolor(headingForegroundColor, valueForegroundColor, headingBackgroundColor, valueBackgroundColor, format, args); }
-        public static string ReadLine(string prompt, bool intercept = false, char echo = '*') { return cc.ReadLine(prompt, intercept, echo); }
-        public static string ReadLine(string prompt, ConsoleColor foregroundColor, ConsoleColor backgroundColor = ConsoleColor.Black, bool intercept = false, char echo = '*') { return cc.ReadLine(prompt, foregroundColor, backgroundColor, intercept, echo); }
     }
-}
