@@ -1,0 +1,1 @@
+﻿CREATE FUNCTION [app.utility].trim(@string VARCHAR(max)) RETURNS VARCHAR(max) AS BEGIN RETURN LTRIM(RTRIM(@string)) END

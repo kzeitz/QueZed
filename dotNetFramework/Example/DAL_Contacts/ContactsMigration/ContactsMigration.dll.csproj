@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4A9BB5CF-9CD1-4A04-A122-8027B7B5838E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ContactsMigration</RootNamespace>
+    <AssemblyName>ContactsMigration</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ICConsole.cs" />
+    <Compile Include="SQL.cs" />
+    <Compile Include="Migrate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\C5.1.0\Common\Source\TCS.Common\Enumerations\TCS.Common.Enumerations\TCS.Common.Enumerations.csproj">
+      <Project>{bade800a-fb76-466c-8389-f7242360226b}</Project>
+      <Name>TCS.Common.Enumerations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\C5.1.0\Common\Source\TCS.Common\TCS.Common\TCS.Common.csproj">
+      <Project>{73e4a4ad-e7ae-41b8-b710-42053d6c6e9b}</Project>
+      <Name>TCS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\C5.1.0\Common\Source\TCS.Generation\TCS.Models\TCS.Models.csproj">
+      <Project>{e4a31fb2-bc69-4490-a5f0-13f5b5590514}</Project>
+      <Name>TCS.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\C5.1.0\fixxStore\ClassicHotKeyControl\ClassicHotKeyControl.vbproj">
+      <Project>{7f49688e-03f6-4725-9021-8529e3d49b91}</Project>
+      <Name>ClassicHotKeyControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ContactsClassic\ContactsClassic.dll.vbproj">
+      <Project>{18dc18dd-b17c-4423-98a8-75c8e7160a8b}</Project>
+      <Name>ContactsClassic.dll</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

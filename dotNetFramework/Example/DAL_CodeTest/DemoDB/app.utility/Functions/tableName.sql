@@ -1,0 +1,1 @@
+﻿CREATE FUNCTION [app.utility].tableName(@fullName SYSNAME) RETURNS SYSNAME AS BEGIN	RETURN PARSENAME(@fullName, 1) END

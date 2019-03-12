@@ -64,7 +64,7 @@ namespace QueZed.Utility.Console {
          }
       }
       private static void writeLineBicolor(this ColorConsole colorConsole, string format, object[] args, ConsoleColor headingForegroundColor = ConsoleColor.DarkGray, ConsoleColor valueForegroundColor = ConsoleColor.White, ConsoleColor headingBackgroundColor = ConsoleColor.Black, ConsoleColor valueBackgroundColor = ConsoleColor.Black) {
-         foreach (string formatPart in Regex.Split(format, matchFormatItem, RegexOptions.Compiled | RegexOptions.IgnoreCase)) {
+            foreach (string formatPart in Regex.Split(format, matchFormatItem, RegexOptions.Compiled | RegexOptions.IgnoreCase)) {
             Match match = Regex.Match(formatPart, matchFormatIndex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (match.Success) Write(colorConsole, (args[Convert.ToInt32(match.Groups["index"].Value)] ?? string.Empty).ToString(), valueForegroundColor, valueBackgroundColor);
             else Write(colorConsole, formatPart, headingForegroundColor, headingBackgroundColor);
@@ -79,4 +79,4 @@ namespace QueZed.Utility.Console {
 
    }
    public class ColorConsole { }
-}
+    }

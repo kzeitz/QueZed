@@ -1,0 +1,1 @@
+﻿CREATE VIEW [dbo.select].[Name]ASSELECT [ID], [FirstName], [LastName]FROM [dbo].[Name]WHERE deleted = 0

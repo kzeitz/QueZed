@@ -1,0 +1,1 @@
+﻿CREATE FUNCTION [app.utility].databaseName(@fullName SYSNAME) RETURNS SYSNAME AS BEGIN RETURN ISNULL(PARSENAME(@fullName, 3), DB_NAME()) END
