@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>QueZed.Utility.Diagnostic.portable</AssemblyName>
+    <AssemblyName>QueZed.Utility.Diagnostic.core</AssemblyName>
     <RootNamespace>QueZed.Utility.Diagnostic</RootNamespace>
   </PropertyGroup>
 

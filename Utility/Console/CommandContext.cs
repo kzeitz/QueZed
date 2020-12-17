@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace QueZed.Utility.Console {
 
+    /// <summary>
+    /// This area needs work...
+    /// The idea is to be able to define a grammar of available commands
+    /// These commands are automatically bound functions and executed
+    /// </summary>
+
     public interface ICommandContext<PType>  {
         string CommandLine { get; }
         string Arguments { get; }
@@ -104,6 +110,8 @@ namespace QueZed.Utility.Console {
         // I'd like to use a more featured string template tool
         // For now I'll do it manually here with string.Format().
         // Look at SmartFormat.NET as a solution. https://github.com/axuno/SmartFormat.NET
+
+        private static ColorConsole console = new ColorConsole();
         class FormatTemplate {
             private struct ColumnWidths { public int Command; public int Alias; }
             private ConsoleColor option = ConsoleColor.Cyan;
@@ -145,7 +153,7 @@ namespace QueZed.Utility.Console {
                 string syntaxPartFormat = string.Format("{0} {{0}} {1}", prompt, string.Format(indexerPart, indexer));
                 string optionPartFormat = string.Format("{{0,-{0}}} {{1,-{1}}}", columnWidths.Command, columnWidths.Alias);
                 string optionPart = string.Format(optionPartFormat, command, aliases );
-                CConsole.WriteLineBicolor(syntax, option, syntaxPartFormat, optionPart, arguments);
+                console.WriteLineBicolor(syntax, option, syntaxPartFormat, optionPart, arguments);
             }
         }
 
@@ -174,13 +182,13 @@ namespace QueZed.Utility.Console {
         private const ConsoleColor heading = ConsoleColor.Yellow;
         private const ConsoleColor subheading = ConsoleColor.Gray;
         public void Help(Type scope) {
-            CConsole.WriteLine("Commands:", heading);
+            console.WriteLine("Commands:", heading);
             string implementor = scope?.Name ?? "All";
             // Force "Application" items (DefaultImplementorName) to sort last
             foreach (KeyValuePair<string, Verb> kvp in verbs.OrderBy(e => e.Value.ImplementorName == Verb.DefaultImplementorName).ThenBy(e => e.Value.ImplementorName)) { 
                 Verb verb = kvp.Value;
                 string currentScope = verb.ImplementorName;
-                if (0 != string.Compare(implementor, currentScope)) { CConsole.WriteLine(string.Format("{0} commands.", currentScope), subheading); implementor = currentScope; }
+                if (0 != string.Compare(implementor, currentScope)) { console.WriteLine(string.Format("{0} commands.", currentScope), subheading); implementor = currentScope; }
                 template.Help(verb);
             }
         }

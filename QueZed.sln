@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utility", "Utility", "{2D3E2CF2-A1FB-4388-B1A6-5A572717EBE9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.portable", "Utility\Console\Console.portable.csproj", "{479CB199-814F-48D4-81AE-F11633E22F38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.core", "Utility\Console\Console.core.csproj", "{479CB199-814F-48D4-81AE-F11633E22F38}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostic.portable", "Utility\Diagnostic\Diagnostic.portable.csproj", "{3F7286C6-74D6-4FEF-B348-9A0054CD00EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostic.core", "Utility\Diagnostic\Diagnostic.core.csproj", "{3F7286C6-74D6-4FEF-B348-9A0054CD00EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
