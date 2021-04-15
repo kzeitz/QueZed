@@ -6,33 +6,29 @@ namespace QueZed.Utility.Console {
     using System;
     using System.Text;
     using System.Text.RegularExpressions;
+
+    // TODO wrap foreground and background and make them easier to use
     public static partial class Extensions {
         private static object writeGate = new object();
         private static object readGate = new object();
-        // This regular expression assumes the pattern - { index }
-        private const string matchFormatItem = @"(\{\d\})";
-        private const string matchFormatIndex = @"\{(?<index>\d)\}";
-        // string.Format's format item actually has the pattern - { index[,alignment][:formatString] }
-        // We can tackle the alignment and formatString options another day.
-        // Perhaps we can incorporate the color option into the format item (but that would only specify the color of the replaced text, not the literal text in the format string)
 
-        public static void WriteLineBlank(this ColorConsole colorConsole, int lines = 1, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
+        public static void WriteLineBlank(this ColorConsole colorConsole, int lines = 1, ConsoleColor fg = ConsoleColor.Gray, ConsoleColor bg = ConsoleColor.Black) {
             lock (writeGate) {
-                foregroundBackground(foregroundColor, backgroundColor);
+                foregroundBackground(fg, bg);
                 Console.WriteLine(new string(char.MinValue, lines - 1).Replace(char.MinValue.ToString(), Environment.NewLine));
                 Console.ResetColor();
             }
         }
-        public static void Write(this ColorConsole colorConsole, string text, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
+        public static void Write(this ColorConsole colorConsole, string text, ConsoleColor fg = ConsoleColor.Gray, ConsoleColor bg = ConsoleColor.Black) {
             lock (writeGate) {
-                foregroundBackground(foregroundColor, backgroundColor);
+                foregroundBackground(fg, bg);
                 Console.Write(text);
                 Console.ResetColor();
             }
         }
-        public static void WriteLine(this ColorConsole colorConsole, string line, ConsoleColor foregroundColor = ConsoleColor.Gray, ConsoleColor backgroundColor = ConsoleColor.Black) {
+        public static void WriteLine(this ColorConsole colorConsole, string line, ConsoleColor fg = ConsoleColor.Gray, ConsoleColor bg = ConsoleColor.Black) {
             lock (writeGate) {
-                foregroundBackground(foregroundColor, backgroundColor);
+                foregroundBackground(fg, bg);
                 Console.WriteLine(line);
                 Console.ResetColor();
             }
@@ -41,13 +37,19 @@ namespace QueZed.Utility.Console {
         //i.e
         //console.WriteLineBicolor("Order : {0} Status : {1} User : {2} Document Count : {3}", "Name", "Status", "UserID", "DocumentCount");
         //console.WriteLineBicolor(ConsoleColor.DarkGreen, ConsoleColor.White, "Table storage update, table: {0}", tableName);
-        public static void WriteLineBicolor(this ColorConsole colorConsole, string format, params object[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args); } }
-        public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, string format, params object[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingForegroundColor, valueForegroundColor); } }
-        public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingForegroundColor, ConsoleColor valueForegroundColor, ConsoleColor headingBackgroundColor, ConsoleColor valueBackgroundColor, string format, params object[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingForegroundColor, valueForegroundColor, headingBackgroundColor, valueBackgroundColor); } }
+
+        /// <summary>
+        /// Write console data in two colors
+        /// </summary>
+        /// <param name="format">Format string</param>
+        /// <param name="args">Array of strings to substitute into the format string</param>
+        public static void WriteLineBicolor(this ColorConsole colorConsole, string format, params string[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args); } }
+        public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingFg, ConsoleColor valueFg, string format, params string[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingFg, valueFg); } }
+        public static void WriteLineBicolor(this ColorConsole colorConsole, ConsoleColor headingFg, ConsoleColor valueFg, ConsoleColor headingBg, ConsoleColor valueBg, string format, params string[] args) { lock (writeGate) { writeLineBicolor(colorConsole, format, args, headingFg, valueFg, headingBg, valueBg); } }
         public static string ReadLine(this ColorConsole colorConsole, string prompt, bool intercept = false, char echo = '*') { lock (readGate) { return ReadLine(colorConsole, prompt, ConsoleColor.Gray, ConsoleColor.Black, intercept, echo); } }
-        public static string ReadLine(this ColorConsole colorConsole, string prompt, ConsoleColor foregroundColor, ConsoleColor backgroundColor = ConsoleColor.Black, bool intercept = false, char echo = '*') {
+        public static string ReadLine(this ColorConsole colorConsole, string prompt, ConsoleColor fg, ConsoleColor bg = ConsoleColor.Black, bool intercept = false, char echo = '*') {
             lock (readGate) {
-                colorConsole.Write(prompt, foregroundColor, backgroundColor);
+                colorConsole.Write(prompt, fg, bg);
                 if (!intercept) return Console.ReadLine();
                 else {
                     int left = Console.CursorLeft;
@@ -63,20 +65,29 @@ namespace QueZed.Utility.Console {
                 }
             }
         }
-        private static void writeLineBicolor(this ColorConsole colorConsole, string format, object[] args, ConsoleColor headingForegroundColor = ConsoleColor.DarkGray, ConsoleColor valueForegroundColor = ConsoleColor.White, ConsoleColor headingBackgroundColor = ConsoleColor.Black, ConsoleColor valueBackgroundColor = ConsoleColor.Black) {
-            foreach (string formatPart in Regex.Split(format, matchFormatItem, RegexOptions.Compiled | RegexOptions.IgnoreCase)) {
-                Match match = Regex.Match(formatPart, matchFormatIndex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                if (match.Success) Write(colorConsole, (args[Convert.ToInt32(match.Groups["index"].Value)] ?? string.Empty).ToString(), valueForegroundColor, valueBackgroundColor);
-                else Write(colorConsole, formatPart, headingForegroundColor, headingBackgroundColor);
+
+        // These regular expressions assumes the pattern - { index }
+        private const string matchItem = @"(\{\d\})";
+        private const string matchFormat = @"{\s*(?<index>\d+)\s*(,\s*(?<spacing>[-+]?\d+))?(\s*:\s*(?<format>.*))?}";
+        // string.Format's format item actually has the pattern - { index[,alignment][:formatString] }
+        // We can tackle the alignment and formatString options another day.
+        // Perhaps we can incorporate the color option into the format item (but that would only specify the color of the replaced text, not the literal text in the format string)
+        private static Regex regItem = new Regex(matchItem, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex regFormat = new Regex(matchFormat, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static void writeLineBicolor(this ColorConsole colorConsole, string format, string[] args, ConsoleColor headingFg = ConsoleColor.DarkGray, ConsoleColor valueFg = ConsoleColor.White, ConsoleColor headingBg = ConsoleColor.Black, ConsoleColor valueBg = ConsoleColor.Black) {
+            foreach (string item in regItem.Split(format)) {
+                Match match = regFormat.Match(item);
+                if (match.Success) Write(colorConsole, null != args ? (args[Convert.ToInt32(match.Groups["index"].Value)] ?? string.Empty).ToString() : item, valueFg, valueBg);
+                else Write(colorConsole, item, headingFg, headingBg);
             }
             Console.WriteLine();
         }
 
-        private static void foregroundBackground(ConsoleColor foregroundColor, ConsoleColor backgroundColor) {
-            Console.ForegroundColor = foregroundColor;
-            Console.BackgroundColor = backgroundColor;
+        private static void foregroundBackground(ConsoleColor fg, ConsoleColor bg) {
+            Console.ForegroundColor = fg;
+            Console.BackgroundColor = bg;
         }
 
     }
     public class ColorConsole { }
-}
+} 
