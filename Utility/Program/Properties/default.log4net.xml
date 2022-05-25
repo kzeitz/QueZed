@@ -17,14 +17,14 @@
     <maximumFileSize value="1000KB" />
     <maxSizeRollBackups value="2" />
     <layout type="log4net.Layout.PatternLayout">
-      <conversionPattern value="%-6timestamp [%-3thread] %-5level %-25logger{1} - %message%newline" />
+      <conversionPattern value="[%date{ISO8601}][%-6timestamp][%-3thread] %-5level %-20.30logger{1} - %message%newline" />
     </layout>
     <filter type="log4net.Filter.LevelRangeFilter">
       <levelMin value="INFO" />
     </filter>
   </appender>
   <root>
-    <level value="DEBUG" />
+    <level value="INFO" />
     <appender-ref ref="Trace" />
     <appender-ref ref="Console" />
     <appender-ref ref="RollingFile" />

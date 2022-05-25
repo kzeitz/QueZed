@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace QueZed.Utility.Program {
     using log4net.Appender;
 
     public abstract class Program {
-        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static string applicationPath = Assembly.GetExecutingAssembly().Location;
 
         private static KeyValueOriginCollection settings = new KeyValueOriginCollection();
@@ -44,6 +44,22 @@ namespace QueZed.Utility.Program {
             }
         }
 
+        // How to use from your Program.cs
+        /*
+        class Program : Karlton.Utility.Program.Program {
+            /// <summary>
+            /// The main entry point for the application.
+            /// </summary>
+            [STAThread]
+            static void Main(string[] args) { new Program().Run(args); }
+            protected override void main(string[] args) {
+                BOL bol = new BOL(Program.DefaultConnectionString);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new Form1());
+            }
+        }
+        */
         protected abstract void main(string[] args);
         protected virtual void configurationFile_Changed(object sender, FileSystemEventArgs e) { log.Info("Configuration file changed"); }
 
@@ -53,9 +69,11 @@ namespace QueZed.Utility.Program {
             ConfigureApplication(args);
             configurationFileWatcher = configureFileWatcher(new FileSystemEventHandler(configurationFile_Changed));
             configurationFileWatcher.EnableRaisingEvents = true;
-            log.Info("Main start");
+            DateTime start = DateTime.Now;
+            log.Info($"Main start [Local: {start.ToString("yyyy-MM-dd HH:mm:ss")} UTC: {start.ToUniversalTime().ToString("u")}]");
             try { main(args); } catch (Exception e) { log.Fatal(e); }
-            log.Info("Main stop");
+            DateTime stop = DateTime.Now;
+            log.Info($"Main stop [Local: {stop.ToString("yyyy-MM-dd HH: mm:ss")} UTC: {stop.ToUniversalTime().ToString("u")}]");
         }
 
         protected virtual void ConfigureLog() {
@@ -90,7 +108,7 @@ namespace QueZed.Utility.Program {
             connectionStrings = ConfigurationManager.ConnectionStrings;
             foreach (ConnectionStringSettings css in connectionStrings) {
                 KeyValueOrigin.Source origin = KeyValueOrigin.Source.AppConfig;
-                // Find a better way to determine if a setting was inherrited from MACHINE.config
+                // Find a better way to determine if a setting was inherited from MACHINE.config
                 if (0 == string.Compare(css.Name, "LocalSqlServer", StringComparison.Ordinal)) origin = KeyValueOrigin.Source.MachineConfig;
                 settings.Add(css.Name, css.ConnectionString, origin);
             }
@@ -100,8 +118,9 @@ namespace QueZed.Utility.Program {
                 if (s.StartsWith("-dev", StringComparison.OrdinalIgnoreCase)) settings.Add("DeveloperMode", "true", KeyValueOrigin.Source.CommandLine);
                 if (s.StartsWith("-use", StringComparison.OrdinalIgnoreCase) && args.Length >= (i + 2)) settings.Add("UseConnection", args[i + 1], KeyValueOrigin.Source.CommandLine, true);
             }
-            log.Info("Global application configuration settings:");
-            foreach (KeyValueOrigin nvo in settings.Settings) log.InfoFormat("  {0, -15}{1, -25}{2}", nvo.Origin.ToString(), nvo.Key, nvo.Value);
+            foreach (DictionaryEntry de in Environment.GetEnvironmentVariables()) Settings.Add(de.Key.ToString(), de.Value.ToString(), KeyValueOrigin.Source.Environment);
+            log.Debug("Global application configuration settings:");
+            foreach (KeyValueOrigin nvo in settings.Settings) log.DebugFormat("  {0, -15}{1, -25}{2}", nvo.Origin.ToString(), nvo.Key, nvo.Value);
         }
 
         private static FileSystemWatcher configureFileWatcher(FileSystemEventHandler onFileChanged) {

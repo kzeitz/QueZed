@@ -13,8 +13,8 @@
     <None Remove="KeyValueOrigin.cs.bak" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.12" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="log4net" Version="2.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.24" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Console\Console.netstandard.csproj" />
