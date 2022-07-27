@@ -21,6 +21,7 @@ namespace QueZed.Utility.Program {
         private string value = null;
         private Source origin = Source.none;
         public KeyValueOrigin(KeyValuePair<string, string> kvp, Source origin) : this(kvp.Key, kvp.Value, origin) { }
+        public KeyValueOrigin((string key, string value) tuple, KeyValueOrigin.Source origin = KeyValueOrigin.Source.Code) : this(tuple.key, tuple.value, origin) { }
         public KeyValueOrigin(string key, string value, Source origin) {
             key.IsNullThrow(nameof(key));
             value.IsNullThrow(nameof(value));
@@ -42,7 +43,7 @@ namespace QueZed.Utility.Program {
             nvo.IsNullThrow(nameof(nvo));
             dictionary.Add(nvo.Key, nvo);
         }
-        public void Add(string key, string value, KeyValueOrigin.Source origin, bool replace = false) { if (replace) dictionary[key] = new KeyValueOrigin(key, value, origin); else dictionary.Add(key, new KeyValueOrigin(key, value, origin)); }
+        public void Add(string key, string value = "", KeyValueOrigin.Source origin = KeyValueOrigin.Source.Code, bool replace = false) { if (replace) dictionary[key] = new KeyValueOrigin(key, value, origin); else dictionary.Add(key, new KeyValueOrigin(key, value, origin)); }
         public void Add(NameValueCollection nvc, KeyValueOrigin.Source origin) {
             nvc.IsNullThrow(nameof(nvc));
             for (int i = 0; i < nvc.Count; ++i) Add(nvc.GetKey(i), nvc.Get(i), origin);

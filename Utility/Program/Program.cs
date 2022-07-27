@@ -17,6 +17,7 @@ namespace QueZed.Utility.Program {
     public abstract class Program {
         protected static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static string applicationPath = Assembly.GetExecutingAssembly().Location;
+        private static string currentDirectory = Directory.GetCurrentDirectory();
 
         private static KeyValueOriginCollection settings = new KeyValueOriginCollection();
         private static ConnectionStringSettingsCollection connectionStrings = null;
@@ -24,6 +25,7 @@ namespace QueZed.Utility.Program {
 
         public static string ApplicationPath { get { return applicationPath; } }
         public static string ApplicationDir { get { return Path.GetDirectoryName(applicationPath); } }
+        public static string CurrentDir { get { return currentDirectory; } }
         public static KeyValueOriginCollection Settings { get { return settings; } }
         public static string DefaultConnectionString {
             get {
@@ -70,18 +72,20 @@ namespace QueZed.Utility.Program {
             configurationFileWatcher = configureFileWatcher(new FileSystemEventHandler(configurationFile_Changed));
             configurationFileWatcher.EnableRaisingEvents = true;
             DateTime start = DateTime.Now;
-            log.Info($"Main start [Local: {start.ToString("yyyy-MM-dd HH:mm:ss")} UTC: {start.ToUniversalTime().ToString("u")}]");
+            log.Info($"Main start [Local: {start:yyyy-MM-dd HH:mm:ss)} UTC: {start.ToUniversalTime():u}]");
             try { main(args); } catch (Exception e) { log.Fatal(e); }
             DateTime stop = DateTime.Now;
-            log.Info($"Main stop [Local: {stop.ToString("yyyy-MM-dd HH: mm:ss")} UTC: {stop.ToUniversalTime().ToString("u")}]");
+            log.Info($"Main stop [Local: {stop:yyyy-MM-dd HH: mm:ss)} UTC: {stop.ToUniversalTime():u)}]");
         }
 
         protected virtual void ConfigureLog() {
             //string sourceConfiguration = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             string sourceConfiguration = configuration.FilePath;
+            log4net.ThreadContext.Properties["id"] = Guid.NewGuid().ToString("N");
             if (System.Configuration.ConfigurationManager.GetSection("log4net") != null) log4net.Config.XmlConfigurator.Configure();
             else {
+                if (Settings.Exists("logFileName")) log4net.GlobalContext.Properties["LogName"] = $"{ Settings["logFileName"] }";
                 sourceConfiguration = "Properties.Resources.DefaultLog4netXML";
                 using (Stream stream = new MemoryStream(ASCIIEncoding.Default.GetBytes(Properties.Resources.DefaultLog4netXML))) {
                     if (stream != null) log4net.Config.XmlConfigurator.Configure(stream);
