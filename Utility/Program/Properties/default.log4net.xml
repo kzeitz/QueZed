@@ -13,7 +13,7 @@
   </appender>
   <appender name="RollingFile" type="log4net.Appender.RollingFileAppender">
 		<lockingModel type="log4net.Appender.FileAppender+MinimalLock"/>
-    <file type="log4net.Util.PatternString" value="log\%property{LogName}" />
+    <file type="log4net.Util.PatternString" value="log/%property{LogName}" />
 		<datePattern value="'.'yyyy-MM-dd.lo'g'" />
     <appendToFile value="true" />
     <maximumFileSize value="1000KB" />
