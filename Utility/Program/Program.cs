@@ -72,10 +72,10 @@ namespace QueZed.Utility.Program {
             configurationFileWatcher = configureFileWatcher(new FileSystemEventHandler(configurationFile_Changed));
             configurationFileWatcher.EnableRaisingEvents = true;
             DateTime start = DateTime.Now;
-            log.Info($"Main start [Local: {start:yyyy-MM-dd HH:mm:ss)} UTC: {start.ToUniversalTime():u}]");
+            log.Info($"Main start [{Environment.MachineName}: {start:yyyy-MM-dd HH:mm:ss} UTC: {start.ToUniversalTime():u}]");
             try { main(args); } catch (Exception e) { log.Fatal(e); }
             DateTime stop = DateTime.Now;
-            log.Info($"Main stop [Local: {stop:yyyy-MM-dd HH: mm:ss)} UTC: {stop.ToUniversalTime():u)}]");
+            log.Info($"Main stop [{Environment.MachineName}: {stop:yyyy-MM-dd HH:mm:ss} UTC: {stop.ToUniversalTime():u}]");
         }
 
         protected virtual void ConfigureLog() {
