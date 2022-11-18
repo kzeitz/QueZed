@@ -107,7 +107,7 @@ namespace QueZed.Utility.Program {
             RollingFileAppender rfAppender = (RollingFileAppender)rootAppender;
             if (rfAppender.RollingStyle == RollingFileAppender.RollingMode.Date & !rfAppender.StaticLogFileName) {
                string logFileName = Settings["logFileName"];
-               List<FileInfo> logFiles = new DirectoryInfo(Path.GetDirectoryName(rfAppender.File)).GetFiles($"{logFileName}*").OrderBy(f => f.LastWriteTime).ToList();
+               List<FileInfo> logFiles = new DirectoryInfo(Path.GetDirectoryName(rfAppender.File)).GetFiles($"{logFileName}*").OrderByDescending(f => f.FullName).ToList();
                if (logFiles.Count() > rfAppender.MaxSizeRollBackups) {
                   log.Info($"Removing old logs, keeping [{rfAppender.MaxSizeRollBackups}] previous log files");
                   for (int i = rfAppender.MaxSizeRollBackups; i <= logFiles.Count(); ++i) logFiles[i].Delete();
