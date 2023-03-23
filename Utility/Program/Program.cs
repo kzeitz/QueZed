@@ -110,7 +110,7 @@ namespace QueZed.Utility.Program {
                List<FileInfo> logFiles = new DirectoryInfo(Path.GetDirectoryName(rfAppender.File)).GetFiles($"{logFileName}*").OrderByDescending(f => f.FullName).ToList();
                if (logFiles.Count() > rfAppender.MaxSizeRollBackups) {
                   log.Info($"Removing old logs, keeping [{rfAppender.MaxSizeRollBackups}] previous log files");
-                  for (int i = rfAppender.MaxSizeRollBackups; i <= logFiles.Count(); ++i) logFiles[i].Delete();
+                  for (int i = rfAppender.MaxSizeRollBackups; i < logFiles.Count(); ++i) { if (logFiles[i].Exists) logFiles[i].Delete(); };
                }
             }
          }
