@@ -107,10 +107,21 @@ namespace QueZed.Utility.Program {
             RollingFileAppender rfAppender = (RollingFileAppender)rootAppender;
             if (rfAppender.RollingStyle == RollingFileAppender.RollingMode.Date & !rfAppender.StaticLogFileName) {
                string logFileName = Settings["logFileName"];
-               List<FileInfo> logFiles = new DirectoryInfo(Path.GetDirectoryName(rfAppender.File)).GetFiles($"{logFileName}*").OrderByDescending(f => f.FullName).ToList();
-               if (logFiles.Count() > rfAppender.MaxSizeRollBackups) {
+               string logDirectory = Path.GetDirectoryName(rfAppender.File);
+               // Decided to setup an archive directory below logs
+               string archiveDirectory = Path.Combine(logDirectory, "archive");
+               if (!Directory.Exists(archiveDirectory)) Directory.CreateDirectory(archiveDirectory);
+               List<FileInfo> logFiles = new DirectoryInfo(Path.GetDirectoryName(rfAppender.File)).GetFiles($"{logFileName}*").Where(f => f.FullName != rfAppender.File).ToList();
+               foreach (FileInfo fi in logFiles) {
+                  string destination = Path.Combine(archiveDirectory, fi.Name);
+                  if (File.Exists(destination)) File.Delete(destination);
+                  File.Move(fi.FullName, Path.Combine(archiveDirectory, fi.Name));
+               }
+               // Remove old archive files
+               List<FileInfo> archiveFiles = new DirectoryInfo(archiveDirectory).GetFiles($"{logFileName}*").OrderByDescending(f => f.FullName).ToList();
+               if (archiveFiles.Count() > rfAppender.MaxSizeRollBackups) {
                   log.Info($"Removing old logs, keeping [{rfAppender.MaxSizeRollBackups}] previous log files");
-                  for (int i = rfAppender.MaxSizeRollBackups; i < logFiles.Count(); ++i) { if (logFiles[i].Exists) logFiles[i].Delete(); };
+                  for (int i = rfAppender.MaxSizeRollBackups; i < archiveFiles.Count(); ++i) { if (archiveFiles[i].Exists) archiveFiles[i].Delete(); };
                }
             }
          }
